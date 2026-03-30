@@ -1,0 +1,23 @@
+# LISFLOOD-FP 8.2 Gauge Monitoring Points
+# ==========================================
+#
+# Format: X    Y    NAME
+# - X: X coordinate in grid cells (from left)
+# - Y: Y coordinate in grid cells (from top)
+# - NAME: Gauge identifier (optional)
+#
+# Lines starting with # are comments
+#
+# Example: Monitoring points for Indus River basin
+
+# Gauge 1: Upstream
+125    150    gauge_upstream
+
+# Gauge 2: Mid-basin
+250    300    gauge_mid
+
+# Gauge 3: Downstream
+375    450    gauge_downstream
+
+# Additional gauges can be added:
+# X    Y    NAME

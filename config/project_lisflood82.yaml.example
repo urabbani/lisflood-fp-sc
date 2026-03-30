@@ -1,0 +1,173 @@
+# Example Configuration for LISFLOOD-FP 8.2
+# Adapted for urabbani/lisflood-fp_8.2_update with GPU acceleration
+
+project:
+  name: "indus-basin-lisflood82"
+  description: "Calibration with LISFLOOD-FP 8.2 (GPU-accelerated)"
+
+# Model adapter configuration
+model:
+  type: "lisflood82"  # Use LISFLOOD-FP 8.2 adapter
+  executable: "/path/to/lisflood-fp_8.2/lisflood"  # Path to lisflood executable
+  param_template: "data/lisflood/template.par"  # Template .par file
+  output_dir: "data/outputs/lisflood82/"
+  
+  # LISFLOOD-FP 8.2 specific options
+  use_cuda: true  # Enable GPU acceleration
+  verbose: true  # Verbose output
+  solver: "ACC"  # Solver: ACC, FV1, FV2, DG2, ACC_NUGRID
+
+# Input data paths
+input_data:
+  rainfall:
+    path: "data/rainfall/rainfall_202606.nc"
+    start_date: "2026-06-01T00:00:00Z"
+    end_date: "2026-06-07T23:59:59Z"
+    format: "netcdf"  # LISFLOOD-FP supports dynamic rain via NetCDF
+    dynamic_rainfall: true  # Enable temporally varying rainfall
+  
+  terrain:
+    path: "data/terrain/dem.asc"  # ASCII raster format
+    crs: "EPSG:32642"  # UTM Zone 42N
+    resolution: 30  # Grid resolution in meters
+  
+  boundary_discharge:
+    path: "data/boundary/upstream.bci"  # LISFLOOD-FP BCI format
+    location: "upstream"
+    format: "bci"  # LISFLOOD-FP boundary condition format
+
+# Calibration settings
+calibration:
+  max_iterations: 100
+  target_metrics:
+    nse: 0.85
+    kge: 0.80
+    iou: 0.70
+  
+  objective_weights:
+    nse: 0.40
+    kge: 0.30
+    iou: 0.30
+  
+  # Calibratable parameters (LISFLOOD-FP 8.2)
+  parameters:
+    # Hydraulic parameters
+    - fpfric  # Floodplain Manning's n
+    - SGCn    # Sub-grid channel Manning's n
+    
+    # Infiltration
+    - infinity  # Infiltration rate (m/s)
+    
+    # Numerical parameters
+    - courant   # CFL number
+    - theta     # Time-stepping parameter
+    
+    # Physical parameters
+    - depth_thresh  # Minimum depth threshold
+    - gravity       # Gravitational acceleration
+    
+    # Sub-grid channel parameters
+    - SGCr    # Sub-grid channel multiplier
+    - SGCp    # Sub-grid channel exponent
+
+# Validation data (observations)
+observations:
+  gauges:
+    - id: "gauge_001"
+      path: "data/observations/gauges/gauge_001.csv"
+      name: "Chashma Barrage"
+      location: [71.367, 32.117]  # [lon, lat]
+      variable: "discharge"
+      unit: "m3/s"
+      time_column: "timestamp"
+      value_column: "discharge"
+      
+      # LISFLOOD-FP 8.2 gauge monitoring
+      lisflood_gauge_file: "data/lisflood/gauges.txt"
+  
+  satellite:
+    - product: "sentinel1"
+      path: "data/observations/satellite/flood_mask.tif"
+      timestamp: "2026-06-03T10:00:00Z"
+      description: "Peak inundation during flood event"
+      
+      # Optional: Auto-extract via Google Earth Engine
+      auto_extract:
+        enabled: false
+        ee_aoi: "data/basin_boundary.geojson"
+        ee_date_range: ["2026-06-01", "2026-06-07"]
+        products:
+          - "COPERNICUS/S1_GRD"  # Sentinel-1 SAR
+          - "LANDSAT/LC08/C02/T1"  # Landsat 8
+        water_threshold: -0.1  # MNDWI threshold
+        output_crs: "EPSG:32642"  # Match model CRS
+        output_resolution: 30  # Match model resolution
+
+# LISFLOOD-FP 8.2 specific settings
+lisflood82:
+  # Solver selection
+  solver:
+    type: "ACC"  # ACC, FV1, FV2, DG2, ACC_NUGRID
+    description: "Acceleration solver - fast and efficient for large domains"
+    
+  # Time control
+  time:
+    sim_time: 604800  # 7 days in seconds
+    initial_tstep: 10.0  # Initial time step (seconds)
+    max_tstep: 10.0  # Maximum solver time step (seconds)
+    saveint: 3600  # Save output every hour (seconds)
+    massint: 3600  # Mass balance check every hour (seconds)
+  
+  # Numerical parameters
+  numerical:
+    courant: 0.7  # CFL number
+    theta: 1.0  # Time-stepping parameter
+    acceleration: true  # Use acceleration formulation
+    froude_limit: true  # Enable Froude number limitation
+    max_froude: 10000.0  # Maximum Froude number
+  
+  # Output control
+  output:
+    resroot: "./results/sim1"  # Output directory and prefix
+    netcdf: false  # Use ASCII output (faster for calibration)
+    ascii_out: true  # ASCII raster output
+    binary_out: false  # Disable binary output
+    depth_off: false  # Output depth files
+    elev_off: false  # Output elevation files
+    max_output: true  # Output maximum depth (.max file)
+    v_output: false  # Output velocity (disabled for speed)
+
+# Surrogate model (speed up calibration)
+surrogate:
+  enabled: true
+  retrain_interval: 10  # Retrain every N iterations
+  model_type: "gaussian_process"  # or "neural_network"
+  
+  # Gaussian Process kernel parameters
+  gp_kernel:
+    length_scale: 1.0
+    variance: 1.0
+    noise: 0.1
+
+# MetaClaw integration (cross-run learning)
+metaclaw:
+  enabled: true
+  skills_dir: "~/.metaclaw/skills/flood-calibration82/"
+  
+  lesson_to_skill:
+    min_severity: "warning"  # warning or error
+    max_skills_per_run: 5
+    auto_export: true
+
+# Visualization settings
+visualization:
+  dpi: 300
+  figsize: [12, 8]
+  colormap: "viridis"
+  save_format: "png"
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/calibration82.log"
+  console: true

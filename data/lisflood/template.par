@@ -1,0 +1,198 @@
+# LISFLOOD-FP 8.2 Parameter Template
+# Adapted for Self-Calibrating LISFLOOD-FP Framework
+# ================================================
+
+# --- Input Files ---
+# Digital Elevation Model (REQUIRED)
+DEMfile ../terrain/dem.asc
+
+# Initial water depths (optional - all dry if not specified)
+# startfile initial.asc
+
+# Boundary conditions (optional - no boundaries if not specified)
+bcifile ../boundary/upstream.bci
+
+# Sub-grid channel files (optional)
+# SGCwidth channel_width.asc
+# SGCbank bank_elev.asc
+# SGCbed bed_elev.asc
+
+# --- Output Control ---
+# Output directory and prefix (REQUIRED)
+resroot ./results/sim1
+
+# Output directory (optional - uses current dir if not specified)
+# ddirroot ./results
+
+# Output file prefix (optional - uses "res" if not specified)
+# resname sim1
+
+# Output interval (seconds) - save results every X seconds
+saveint 3600
+
+# Mass balance calculation interval (seconds)
+massint 3600
+
+# Floodplain Manning's n (calibratable)
+fpfric 0.035
+
+# Sub-grid channel Manning's n (calibratable)
+# SGCn 0.035
+
+# --- Time Control ---
+# Simulation duration (seconds) - REQUIRED
+nsim_time 604800
+
+# Initial time step size (seconds)
+initial_tstep 10.0
+
+# Maximum solver time step (seconds)
+# solver_max_step 10.0
+
+# --- Solver Options ---
+# Solver type: ACC, FV1, FV2, DG2, ACC_NUGRID
+nsolver ACC
+
+# Enable CUDA acceleration (calibration framework controls this)
+# cuda 1
+
+# Use acceleration formulation (for ACC solver)
+acceleration 1
+
+# Enable Froude number limitation
+froude 1
+
+# Maximum depth for kinematic assumption (meters)
+# hk_max 10
+
+# Krivodonova threshold (for DG2 solver)
+# krivodonovathreshold 10.0
+
+# AMR threshold (for DG2 solver)
+# epsilon 0.1
+
+# CFL number (calibratable)
+courant 0.7
+
+# --- Sub-Grid Channel Model ---
+# Sub-grid channel Manning's n (calibratable)
+# SGCn 0.035
+
+# Sub-grid channel multiplier (calibratable)
+# SGCr 0.15
+
+# Sub-grid channel exponent (calibratable)
+# SGCp 0.78
+
+# Sub-grid channel meander coefficient
+# SGCm 1.0
+
+# Sub-grid channel type (1=rectangular, 2=trapezoidal, 3=parabolic)
+# SGCchan 1
+
+# --- Infiltration and Rainfall ---
+# Rainfall input file
+# rain ../rainfall/rainfall.asc
+
+# Rainfall mask (optional)
+# rainfallmask mask.asc
+
+# Dynamic rainfall NetCDF file (recommended)
+# dynamicrainfile ../rainfall/rainfall.nc
+
+# Evaporation input file (optional)
+# evaporation evap.nc
+
+# Infiltration rate (m/s) (calibratable)
+infinity 0.0001
+
+# Distributed infiltration grid (optional)
+# dist_inf inf_grid.asc
+
+# --- Dam Operations ---
+# Dam parameters file (optional)
+# damfile dams.txt
+
+# Dam location mask (optional)
+# dammask dam_locs.asc
+
+# --- Special Modes ---
+# Enable diffusive mode (optional)
+# diffusive
+
+# Enable flow routing (optional)
+# routing
+
+# Enable steady-state checking (optional)
+# steady
+
+# Checkpoint interval (seconds) (optional)
+# checkpoint 3600
+
+# Checkpoint directory (optional)
+# checkpointdir ./checkpoint
+
+# --- Output Options ---
+# Turn off .elevation file output (optional)
+# elevoff
+
+# Turn off .depth file output (optional)
+# depthoff
+
+# Include velocity output (.Vx, .Vy) (optional)
+# voutput
+
+# Output initial 2D flow field (DG2/FV2) (optional)
+# startfile2d
+
+# Output start elevation (optional)
+# startelev
+
+# Output start flows (DG2) (optional)
+# startq2d
+
+# Turn off adaptive time stepping (optional)
+# adaptoff
+
+# Use binary raster format (optional)
+# binaryraster
+
+# Output in NetCDF format (optional)
+# netcdf_out
+
+# Enable hazard output (optional)
+# hazard
+
+# --- Monitoring ---
+# Stage monitoring locations (optional)
+# stagefile gauges.stage
+
+# Gauge locations file (optional)
+# gaugefile gauges.txt
+
+# --- Misc Parameters ---
+# Log file path (optional)
+# logfile simulation.log
+
+# Enable profiling (optional)
+# profiles 0
+
+# Debug level (0-3)
+# debug 0
+
+# Enable verbose output
+verbose
+
+# --- Calibratable Parameters ---
+# These parameters will be automatically adjusted by the calibration framework:
+# 
+# fpfric        - Floodplain Manning's n (default: 0.035, range: 0.01-0.1)
+# SGCn          - Sub-grid channel Manning's n (default: 0.035, range: 0.02-0.06)
+# infinity       - Infiltration rate (default: 0.0001, range: 0.0-0.001)
+# courant        - CFL number (default: 0.7, range: 0.3-0.9)
+# theta          - Time-stepping parameter (default: 1.0, range: 0.5-1.0)
+# depth_thresh    - Minimum depth threshold (default: 0.001, range: 0.0005-0.01)
+# gravity        - Gravitational acceleration (default: 9.8, range: 9.7-9.9)
+# max_Froude     - Maximum Froude number (default: 10000.0, range: 1.0-10000.0)
+# SGCr           - Sub-grid channel multiplier (default: 0.15, range: 0.1-0.2)
+# SGCp           - Sub-grid channel exponent (default: 0.78, range: 0.7-0.85)

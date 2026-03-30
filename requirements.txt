@@ -1,0 +1,28 @@
+# Core dependencies
+numpy>=1.24.0
+scipy>=1.10.0
+pyyaml>=6.0
+pandas>=2.0.0
+
+# Geospatial processing
+rasterio>=1.3.0
+geopandas>=0.13.0
+shapely>=2.0.0
+
+# Machine learning (surrogate model)
+scikit-learn>=1.3.0
+scikit-optimize>=0.9.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Google Earth Engine (optional, for auto-extraction)
+# ee>=0.21.0
+
+# MetaClaw (optional, for cross-run learning)
+# metaclaw>=0.1.0
+
+# Development tools
+pytest>=7.4.0
+black>=23.0.0

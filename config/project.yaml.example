@@ -1,0 +1,112 @@
+# Self-Calibrating LISFLOOD-FP - Configuration File
+# Copy this file to config/project.yaml and edit with your data paths
+
+project:
+  name: "indus-basin-demo"
+  description: "Demo calibration for Indus River basin"
+
+# Model adapter configuration
+model:
+  type: "lisflood-fp"
+  executable: "/path/to/lisflood-fp"  # Path to LISFLOOD-FP executable
+  param_template: "data/lisflood/template.par"  # Template .par file
+  output_dir: "data/outputs/lisflood/"  # Simulation output directory
+
+# Input data paths
+input_data:
+  rainfall:
+    path: "data/rainfall/rainfall_202606.nc"
+    start_date: "2026-06-01T00:00:00Z"
+    end_date: "2026-06-07T23:59:59Z"
+    format: "netcdf"  # or "csv"
+  
+  terrain:
+    path: "data/terrain/dem.tif"
+    crs: "EPSG:32642"  # Coordinate reference system (UTM Zone 42N)
+    resolution: 30  # Grid resolution in meters
+  
+  boundary_discharge:
+    path: "data/boundary/upstream_discharge.csv"
+    location: "upstream"  # or "downstream"
+
+# Calibration settings
+calibration:
+  max_iterations: 100
+  target_metrics:
+    nse: 0.85
+    kge: 0.80
+    iou: 0.70
+  
+  objective_weights:
+    nse: 0.40
+    kge: 0.30
+    iou: 0.30
+  
+  convergence:
+    tolerance: 0.001
+    window: 10  # Check last N iterations
+
+# Validation data (observations)
+observations:
+  gauges:
+    - id: "gauge_001"
+      path: "data/observations/gauges/gauge_001.csv"
+      name: "Chashma Barrage"
+      location: [71.367, 32.117]  # [lon, lat]
+      variable: "discharge"  # or "water_level"
+      unit: "m3/s"
+      time_column: "timestamp"
+      value_column: "discharge"
+  
+  satellite:
+    - product: "sentinel1"
+      path: "data/observations/satellite/flood_mask.tif"
+      timestamp: "2026-06-03T10:00:00Z"
+      description: "Peak inundation during flood event"
+      
+      # Optional: Auto-extract flood mask via Google Earth Engine
+      auto_extract:
+        enabled: false
+        ee_aoi: "data/basin_boundary.geojson"  # Basin boundary (GeoJSON)
+        ee_date_range: ["2026-06-01", "2026-06-07"]
+        products:
+          - "COPERNICUS/S1_GRD"  # Sentinel-1 SAR
+          - "LANDSAT/LC08/C02/T1"  # Landsat 8
+        water_threshold: -0.1  # MNDWI threshold for water extraction
+        crs: "EPSG:32642"
+        resolution: 30
+
+# Surrogate model (speed up calibration)
+surrogate:
+  enabled: true
+  retrain_interval: 10  # Retrain every N iterations
+  model_type: "gaussian_process"  # or "neural_network"
+  
+  # Gaussian Process kernel parameters
+  gp_kernel:
+    length_scale: 1.0
+    variance: 1.0
+    noise: 0.1
+
+# MetaClaw integration (cross-run learning)
+metaclaw:
+  enabled: true
+  skills_dir: "~/.metaclaw/skills/flood-calibration/"
+  
+  lesson_to_skill:
+    min_severity: "warning"  # warning or error
+    max_skills_per_run: 5
+    auto_export: true
+
+# Visualization settings
+visualization:
+  dpi: 300
+  figsize: [12, 8]
+  colormap: "viridis"
+  save_format: "png"
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/calibration.log"
+  console: true
