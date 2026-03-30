@@ -19,7 +19,7 @@ All files have been committed to git with a comprehensive commit message documen
 
 2. **Push from local:**
    ```bash
-   cd /home/umair/.openclaw/workspace/flood-autocalib
+   cd /mnt/d/flood-autocalib
    
    # Add remote (replace YOUR_USERNAME)
    git remote add origin https://github.com/YOUR_USERNAME/self-calibrating-lisflood-fp.git
@@ -59,7 +59,7 @@ If you want to replace `lisflood-fp_8.2_update` with this framework:
 
 4. **Push to renamed repository:**
    ```bash
-   cd /home/umair/.openclaw/workspace/flood-autocalib
+   cd /mnt/d/flood-autocalib
    
    # Update remote to new name
    git remote set-url origin https://github.com/urabbani/self-calibrating-lisflood-fp.git
@@ -211,6 +211,12 @@ After pushing, link to related repositories in README.md:
 - **AutoResearchClaw** (Inspiration): https://github.com/aiming-lab/AutoResearchClaw
   - 23-stage research pipeline that inspired our multi-objective approach
 ```
+
+## 🌐 Current Repository Status
+
+- **GitHub Repository**: https://github.com/urabbani/lisflood-fp-sc ✅ (renamed)
+- **Local Repository**: /mnt/d/flood-autocalib ✅
+- **Remote Updated**: origin → https://github.com/urabbani/lisflood-fp-sc.git ✅
 
 ---
 

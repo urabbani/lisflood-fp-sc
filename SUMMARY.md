@@ -87,7 +87,7 @@ make -j
 ### Step 2: Configure Framework
 
 ```bash
-cd /home/umair/.openclaw/workspace/flood-autocalib
+cd /mnt/d/flood-autocalib
 cp config/project_lisflood82.yaml.example config/project.yaml
 
 # Edit paths in config/project.yaml:
@@ -282,7 +282,7 @@ model:
 ### Then Run
 
 ```bash
-cd /home/umair/.openclaw/workspace/flood-autocalib
+cd /mnt/d/flood-autocalib
 python main.py --config config/project.yaml --save-plots
 ```
 

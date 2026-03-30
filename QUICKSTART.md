@@ -4,7 +4,7 @@
 
 ```bash
 # Navigate to project directory
-cd /home/umair/.openclaw/workspace/flood-autocalib
+cd /mnt/d/flood-autocalib
 
 # Install dependencies
 pip install -r requirements.txt
