@@ -39,7 +39,7 @@ llm:
   base_url: "https://openrouter.ai/api/v1"
   wire_api: "chat_completions"  # Set to "responses" for Responses-only gateways
   api_key_env: "OPENROUTER_API_KEY"
-  api_key: "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"
+  api_key: "API_Key_Here"
   primary_model: "nvidia/nemotron-3-super-120b-a12b:free"
   fallback_models:
     - "minimax/minimax-m2.5:free"
