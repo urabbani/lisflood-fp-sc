@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import logging
+from pathlib import Path
 import numpy as np
 import rasterio
 from rasterio.transform import from_origin
@@ -19,11 +20,20 @@ logger = logging.getLogger(__name__)
 
 class LISFLOODAdapter(ModelAdapter):
     """Adapter for LISFLOOD-FP hydrodynamic model"""
+
+    @staticmethod
+    def _resolve_executable(executable: str) -> str:
+        """Resolve 'auto' to the vendored LISFLOOD-FP binary."""
+        if executable != "auto":
+            return executable
+
+        from models.lisflood82.adapter import LISFLOOD82Adapter
+        return LISFLOOD82Adapter._resolve_executable("auto")
     
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        
-        self.executable = config["executable"]
+
+        self.executable = LISFLOODAdapter._resolve_executable(config["executable"])
         self.param_template = config["param_template"]
         self.output_dir = config["output_dir"]
         

@@ -20,6 +20,9 @@ data/observations/satellite/*.tif
 # Logs
 logs/
 
+# Vendor build artifacts
+vendor/lisflood-fp/build/
+
 # IDE
 .vscode/
 .idea/

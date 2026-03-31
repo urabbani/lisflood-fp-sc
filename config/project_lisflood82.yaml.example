@@ -8,7 +8,8 @@ project:
 # Model adapter configuration
 model:
   type: "lisflood82"  # Use LISFLOOD-FP 8.2 adapter
-  executable: "/path/to/lisflood-fp_8.2/lisflood"  # Path to lisflood executable
+  executable: "auto"  # "auto" uses vendored source (auto-compiles), or "/path/to/lisflood"
+  # To use a specific binary: "/path/to/lisflood-fp_8.2/lisflood"
   param_template: "data/lisflood/template.par"  # Template .par file
   output_dir: "data/outputs/lisflood82/"
   
