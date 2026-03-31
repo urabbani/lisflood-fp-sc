@@ -81,10 +81,10 @@ python main.py --config config/project.yaml
 
 ```
 flood-autocalib/
-├── vendor/
-│   └── lisflood-fp/        # LISFLOOD-FP 8.2 source (git submodule)
+├── src/
+│   └── lisflood-fp/        # LISFLOOD-FP 8.2 source (integrated)
 ├── scripts/
-│   └── build_lisflood.py   # Compile vendor source
+│   └── build_lisflood.py   # Compile integrated source
 ├── config/
 │   └── project.yaml.example
 ├── models/
@@ -109,15 +109,9 @@ flood-autocalib/
 
 ## Building LISFLOOD-FP
 
-The LISFLOOD-FP 8.2 source is included as a git submodule. The framework auto-compiles it when `executable: "auto"` is set in config.
+The LISFLOOD-FP 8.2 source is integrated directly into the repository. The framework auto-compiles it when `executable: "auto"` is set in config.
 
 ```bash
-# Clone with submodules
-git clone --recurse-submodules https://github.com/urabbani/lisflood-fp-sc.git
-
-# Or init submodules in existing clone
-git submodule update --init --recursive
-
 # Manual build (optional — auto-builds if needed)
 python scripts/build_lisflood.py           # CPU-only
 python scripts/build_lisflood.py --cuda    # With GPU acceleration
