@@ -1,0 +1,27 @@
+# LISFLOOD-FP Simple Floodplain Example
+# This is a basic example parameter file for a simple floodplain simulation
+
+# --- Input Files ---
+DEMfile         dem.asc         # Digital Elevation Model
+startfile       h_init.asc      # Initial water depths (optional)
+bcifile         boundary.bci    # Boundary condition file
+
+# --- Output Control ---
+resroot         ./results/sim1  # Output directory and prefix
+saveint         3600            # Output interval (seconds)
+massint         3600            # Mass balance calculation interval (seconds)
+dirroot         ./results       # Output directory
+resname         sim1            # Output file prefix
+fpfric          0.035           # Floodplain Manning's n value
+voutput                         # Include velocity output (.Vx, .Vy)
+hazard                          # Generate hazard rating output
+
+# --- Time Control ---
+sim_time        86400           # Simulation duration (24 hours)
+initial_tstep   10.0            # Initial time step size (seconds)
+
+# --- Solver Options ---
+solver          ACC             # Use the acceleration solver
+acceleration    1               # Use acceleration formulation
+froude          1               # Enable Froude number limitation
+courant         0.7             # CFL number for adaptive time stepping

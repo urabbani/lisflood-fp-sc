@@ -1,0 +1,32 @@
+# LISFLOOD-FP Dam Breach Example
+# Example parameter file for simulating a dam breach using weirs
+
+# --- Input Files ---
+DEMfile         dam_dem.asc     # Digital Elevation Model with dam
+startfile       reservoir.asc   # Initial water depths (reservoir filled)
+weirfile        breach.txt      # Weir file defining the breach location
+
+# --- Output Control ---
+resroot         ./results/breach_sim  # Output directory and prefix
+saveint         300             # Output interval (5 minutes)
+massint         300             # Mass balance calculation interval
+dirroot         ./results       # Output directory
+resname         breach_sim      # Output file prefix
+fpfric          0.035           # Floodplain Manning's n value
+voutput                         # Include velocity output
+hazard                          # Generate hazard rating output
+netcdf_out                      # Output in NetCDF format
+
+# --- Time Control ---
+sim_time        21600           # Simulation duration (6 hours)
+initial_tstep   1.0             # Initial time step size (seconds)
+
+# --- Solver Options ---
+solver          FV2             # Use the second-order finite volume solver
+acceleration    0               # Use full shallow water equations
+cuda            1               # Enable CUDA acceleration
+froude          1               # Enable Froude number limitation
+courant         0.5             # CFL number for adaptive time stepping
+
+# --- Monitoring ---
+stagefile       gauges.stage    # Monitor water levels at key locations

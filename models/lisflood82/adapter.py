@@ -132,37 +132,39 @@ class LISFLOOD82Adapter(ModelAdapter):
     
     @staticmethod
     def _resolve_executable(executable: str) -> str:
-        """Resolve 'auto' to the vendored LISFLOOD-FP binary, compiling if needed."""
+        """Resolve 'auto' to the integrated LISFLOOD-FP binary, compiling if needed."""
         if executable != "auto":
             return executable
 
-        # Look for vendored LISFLOOD-FP source
+        # Look for integrated LISFLOOD-FP source
         project_root = Path(__file__).resolve().parent.parent.parent
-        vendor_dir = project_root / "vendor" / "lisflood-fp"
-        build_dir = vendor_dir / "build"
+        source_dir = project_root / "src" / "lisflood-fp"
+        build_dir = source_dir / "build"
 
-        if not vendor_dir.exists():
+        if not source_dir.exists():
             raise FileNotFoundError(
-                "LISFLOOD-FP source not found. "
-                "Run: git submodule update --init --recursive"
+                "LISFLOOD-FP source not found in src/lisflood-fp/"
             )
 
         # Check for existing binary
         for name in ["lisflood", "lisflood.exe"]:
             binary = build_dir / name
             if binary.exists():
-                logger.info("Using vendored LISFLOOD-FP binary: %s", binary)
+                logger.info("Using integrated LISFLOOD-FP binary: %s", binary)
                 return str(binary)
 
         # Also check Release subdirectory (Windows)
         release_binary = build_dir / "Release" / "lisflood.exe"
         if release_binary.exists():
-            logger.info("Using vendored LISFLOOD-FP binary: %s", release_binary)
+            logger.info("Using integrated LISFLOOD-FP binary: %s", release_binary)
             return str(release_binary)
 
         # Binary not found — attempt to compile
-        logger.info("LISFLOOD-FP binary not found, compiling from vendored source...")
-        from scripts.build_lisflood import build
+        logger.info("LISFLOOD-FP binary not found, compiling from integrated source...")
+        # Import build script from the new location
+        import sys
+        sys.path.append(str(project_root / "scripts"))
+        from build_lisflood import build
         binary = build(clean=False, cuda=False)
         logger.info("Compiled LISFLOOD-FP: %s", binary)
         return str(binary)

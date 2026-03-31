@@ -1,0 +1,16 @@
+3  # Number of weirs
+
+# Format: x y Type Cd Crest_Elev Modular_Limit Width
+# Types: W = weir in west direction, E = weir in east direction
+#        S = weir in south direction, N = weir in north direction
+#        WB = bridge in west direction, etc.
+#        WF = one-way flow weir in west direction, etc.
+
+# Weir 1 - Standard weir flowing west
+150.0 100.0 W 0.544 10.5 0.7 20.0
+
+# Weir 2 - One-way flow culvert flowing east
+200.0 120.0 EF 0.544 9.8 0.7 5.0
+
+# Weir 3 - Bridge structure flowing south
+180.0 150.0 SB 0.544 11.2 0.7 15.0

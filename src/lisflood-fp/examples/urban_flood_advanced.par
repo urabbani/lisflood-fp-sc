@@ -1,0 +1,53 @@
+# LISFLOOD-FP Advanced Urban Flooding Example
+# This parameter file demonstrates the use of advanced friction and infiltration models
+
+# --- Input Files ---
+DEMfile         urban_dem.asc    # Digital Elevation Model
+startfile       h_init.asc       # Initial water depths
+bcifile         boundary.bci     # Boundary condition file
+
+# --- Output Control ---
+resroot         ./results/urban  # Output directory and prefix
+saveint         60               # Output interval (seconds)
+massint         60               # Mass balance calculation interval (seconds)
+dirroot         ./results        # Output directory
+resname         urban            # Output file prefix
+fpfric          0.035            # Floodplain Manning's n value
+voutput                          # Include velocity output (.Vx, .Vy)
+hazard                           # Generate hazard rating output
+
+# --- Time Control ---
+sim_time        3600             # Simulation duration (1 hour)
+initial_tstep   0.1              # Initial time step size (seconds)
+
+# --- Solver Options ---
+solver          FV2              # Use the 2nd-order finite volume solver
+cuda            1                # Enable CUDA acceleration
+acceleration    1                # Use acceleration formulation
+froude          1                # Enable Froude number limitation
+courant         0.7              # CFL number for adaptive time stepping
+
+# --- Advanced Friction Parameters ---
+# These parameters control the advanced friction model for shallow flows
+# The model automatically transitions between laminar and turbulent regimes
+laminar_threshold 0.01           # Depth below which laminar flow model is used (m)
+shallow_threshold 0.05           # Depth below which a blended model is used (m)
+
+# --- Advanced Infiltration Parameters ---
+# These parameters enable the Green-Ampt infiltration model
+# If not specified, the model uses default values
+soildepth       1.0              # Soil depth in meters
+soilporosity    0.4              # Default soil porosity (fraction)
+suction_head    0.1              # Wetting front suction head (m)
+init_moisture   0.2              # Initial soil moisture content (fraction)
+infinity        0.00001          # Hydraulic conductivity (m/s)
+
+# --- Rainfall Input ---
+rain            rainfall.asc     # Rainfall input file
+rainfallmask    mask.asc         # Rainfall mask
+dynamicrainfile rainfall_dyn.nc  # Dynamic rainfall NetCDF file
+
+# --- Misc Parameters ---
+logfile         simulation.log   # Log file path
+stagefile       gauges.stage     # Stage monitoring locations
+gaugefile       gauges.txt       # Gauge locations file

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build LISFLOOD-FP from vendored source.
+Build LISFLOOD-FP from integrated source.
 
 Usage:
     python scripts/build_lisflood.py              # CPU-only build
@@ -19,8 +19,8 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-VENDOR_DIR = PROJECT_ROOT / "vendor" / "lisflood-fp"
-BUILD_DIR = VENDOR_DIR / "build"
+SOURCE_DIR = PROJECT_ROOT / "src" / "lisflood-fp"
+BUILD_DIR = SOURCE_DIR / "build"
 
 
 def find_binary() -> Path | None:
@@ -29,7 +29,6 @@ def find_binary() -> Path | None:
         BUILD_DIR / "lisflood",
         BUILD_DIR / "lisflood.exe",
         BUILD_DIR / "Release" / "lisflood.exe",
-        VENDOR_DIR / "build" / "lisflood",
     ]
     for path in candidates:
         if path.exists():
@@ -82,10 +81,10 @@ def build(clean: bool = False, cuda: bool = False, jobs: int | None = None) -> P
     Raises:
         RuntimeError: If build fails
     """
-    if not VENDOR_DIR.exists():
+    if not SOURCE_DIR.exists():
         raise FileNotFoundError(
-            f"LISFLOOD-FP source not found at {VENDOR_DIR}\n"
-            f"Run: git submodule update --init --recursive"
+            f"LISFLOOD-FP source not found at {SOURCE_DIR}\n"
+            f"Source should be in src/lisflood-fp/"
         )
 
     # Check dependencies

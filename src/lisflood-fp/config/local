@@ -1,0 +1,7 @@
+# Enable C++14 and other flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -O3 -fopenmp -D_NUMERIC_MODE=1 -D_NETCDF=1")
+
+# Add necessary CUDA flags
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --expt-extended-lambda")
+# Set higher CUDA architecture for compatibility with CUDA 12.4
+set(CMAKE_CUDA_ARCHITECTURES 70)
