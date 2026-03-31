@@ -270,6 +270,6 @@ If you use this code, please cite:
   title = {Self-Calibrating LISFLOOD-FP},
   author = {Umair Rabbani},
   year = {2026},
-  url = {https://github.com/yourusername/flood-autocalib}
+  url = {https://github.com/urabbani/self-calibrating-lisflood-fp}
 }
 ```
