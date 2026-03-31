@@ -1,0 +1,31 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+*.egg
+dist/
+build/
+*.so
+
+# Config with local paths
+config/project.yaml
+config/project_lisflood82.yaml
+
+# Data (large files)
+data/outputs/
+data/observations/gauges/*.csv
+data/observations/satellite/*.tif
+
+# Logs
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

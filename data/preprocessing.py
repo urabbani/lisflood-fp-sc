@@ -266,8 +266,9 @@ def align_spatial_data(obs_grid: np.ndarray,
     print(f"   Aligning spatial grids to common bounds")
     print(f"   Intersection: x=[{min_x:.2f}, {max_x:.2f}], y=[{min_y:.2f}, {max_y:.2f}]")
     
-    # Reproject both grids to common bounds
-    # (Simplified: just return original grids with warning)
+    # NOTE: Full reprojection not yet implemented.
+    # Currently only crops grids to common shape.
+    # TODO: Implement proper rasterio.warp.reproject for CRS/resolution alignment.
     if obs_grid.shape != sim_grid.shape:
         print(f"   Warning: Grid shapes differ: {obs_grid.shape} vs {sim_grid.shape}")
         print(f"   Using smaller shape: {tuple(min(s) for s in zip(obs_grid.shape, sim_grid.shape))}")

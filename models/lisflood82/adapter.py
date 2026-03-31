@@ -6,14 +6,18 @@ multiple solvers, and enhanced features.
 
 import os
 import re
+import shutil
 import subprocess
+import logging
 import numpy as np
 import rasterio
 from pathlib import Path
 from typing import Dict, Any, Tuple
 import pandas as pd
 
-from ..adapter import ModelAdapter, SimulationResult
+from models.adapter import ModelAdapter, SimulationResult
+
+logger = logging.getLogger(__name__)
 
 
 class LISFLOOD82Adapter(ModelAdapter):
@@ -164,8 +168,8 @@ class LISFLOOD82Adapter(ModelAdapter):
         for line in self.template_lines:
             updated_line = line
             for param_name, param_value in params.items():
-                # Pattern: PARAM_NAME VALUE (case-insensitive)
-                pattern = rf'^{param_name}\s+\d+\.?\d*e?[+-]?\d*'
+                # Pattern: PARAM_NAME VALUE (case-insensitive, escaped param name)
+                pattern = rf'^{re.escape(param_name)}\s+\d+\.?\d*e?[+-]?\d*'
                 if re.search(pattern, line, re.IGNORECASE):
                     # Preserve comments
                     comment = ""
@@ -259,6 +263,7 @@ class LISFLOOD82Adapter(ModelAdapter):
         discharge_file = os.path.join(self.output_dir, "simulation.discharge")
         
         if not os.path.exists(discharge_file):
+            logger.warning("Primary discharge file not found: %s", discharge_file)
             # Try alternative names
             for prefix in ["sim1", "output"]:
                 for ext in [".discharge", ".stage"]:
@@ -270,8 +275,7 @@ class LISFLOOD82Adapter(ModelAdapter):
                     break
         
         if not os.path.exists(discharge_file):
-            print(f"   Warning: Discharge file not found in {self.output_dir}")
-            print(f"   Looking for: simulation.discharge, sim1.discharge, output.discharge, etc.")
+            logger.warning("Discharge file not found in %s", self.output_dir)
             return {"timestamps": np.array([]), "values": np.array([])}
         
         # Parse discharge file
@@ -293,7 +297,7 @@ class LISFLOOD82Adapter(ModelAdapter):
                         except ValueError:
                             continue
         except Exception as e:
-            print(f"   Warning: Error reading discharge file: {str(e)}")
+            logger.warning("Error reading discharge file: %s", str(e))
             return {"timestamps": np.array([]), "values": np.array([])}
         
         print(f"   Extracted {len(values)} discharge data points")
@@ -331,8 +335,7 @@ class LISFLOOD82Adapter(ModelAdapter):
                 break
         
         if inundation_file is None:
-            print(f"   Warning: Inundation file not found in {self.output_dir}")
-            print(f"   Looking for: simulation.max, sim1.max, simulation.wd, etc.")
+            logger.warning("Inundation file not found in %s", self.output_dir)
             return {"grid": np.array([]), "resolution": None, "crs": None}
         
         print(f"   Found inundation file: {inundation_file}")
@@ -359,7 +362,7 @@ class LISFLOOD82Adapter(ModelAdapter):
             }
         
         except Exception as e:
-            print(f"   Warning: Error reading inundation file: {str(e)}")
+            logger.warning("Error reading inundation file: %s", str(e))
             
             # Try reading as ASCII text if rasterio fails
             try:
@@ -371,7 +374,7 @@ class LISFLOOD82Adapter(ModelAdapter):
                         "crs": None,
                         "transform": None
                     }
-            except:
+            except Exception:
                 return {"grid": np.array([]), "resolution": None, "crs": None}
     
     def _read_ascii_raster(self, file_path: str) -> np.ndarray:
@@ -389,22 +392,23 @@ class LISFLOOD82Adapter(ModelAdapter):
         
         header_lines = []
         for i, line in enumerate(lines):
-            if line.startswith('ncols'):
+            line_lower = line.strip().lower()
+            if line_lower.startswith('ncols'):
                 ncols = int(line.split()[1])
                 header_lines.append(i)
-            elif line.startswith('nrows'):
+            elif line_lower.startswith('nrows'):
                 nrows = int(line.split()[1])
                 header_lines.append(i)
-            elif line.startswith('xllcorner'):
+            elif line_lower.startswith('xllcorner'):
                 xllcorner = float(line.split()[1])
                 header_lines.append(i)
-            elif line.startswith('yllcorner'):
+            elif line_lower.startswith('yllcorner'):
                 yllcorner = float(line.split()[1])
                 header_lines.append(i)
-            elif line.startswith('cellsize'):
+            elif line_lower.startswith('cellsize'):
                 cellsize = float(line.split()[1])
                 header_lines.append(i)
-            elif line.startswith('nodata_value'):
+            elif line_lower.startswith('nodata_value'):
                 nodata_value = float(line.split()[1])
                 header_lines.append(i)
         
@@ -431,7 +435,6 @@ class LISFLOOD82Adapter(ModelAdapter):
         par_file = self.set_parameters(self.current_params)
         
         # Copy to output path
-        import shutil
         shutil.copy2(par_file, output_path)
         
         print(f"Calibrated parameters saved to: {output_path}")

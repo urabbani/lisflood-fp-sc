@@ -5,12 +5,16 @@ Parses .par files, runs simulations, extracts outputs.
 
 import os
 import re
+import shutil
 import subprocess
+import logging
 import numpy as np
 import rasterio
 from rasterio.transform import from_origin
 from typing import Dict, Any
-from ..adapter import ModelAdapter, SimulationResult
+from models.adapter import ModelAdapter, SimulationResult
+
+logger = logging.getLogger(__name__)
 
 
 class LISFLOODAdapter(ModelAdapter):
@@ -160,7 +164,7 @@ class LISFLOODAdapter(ModelAdapter):
         discharge_file = os.path.join(self.output_dir, "discharge.out")
         
         if not os.path.exists(discharge_file):
-            print(f"Warning: Discharge file not found: {discharge_file}")
+            logger.warning("Discharge file not found: %s", discharge_file)
             return {"timestamps": np.array([]), "values": np.array([])}
         
         # Parse discharge file (format may vary)
@@ -205,7 +209,7 @@ class LISFLOODAdapter(ModelAdapter):
                 break
         
         if inundation_file is None:
-            print(f"Warning: Inundation file not found in {self.output_dir}")
+            logger.warning("Inundation file not found in %s", self.output_dir)
             return {"grid": np.array([]), "resolution": None, "crs": None}
         
         # Read with rasterio
@@ -237,7 +241,6 @@ class LISFLOODAdapter(ModelAdapter):
         par_file = self.set_parameters(self.current_params)
         
         # Copy to output path
-        import shutil
         shutil.copy2(par_file, output_path)
         
         print(f"Calibrated parameters saved to: {output_path}")
