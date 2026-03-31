@@ -4,8 +4,8 @@
 
 A model-agnostic, self-improving flood simulation system with automatic calibration using gauge data and satellite-derived inundation extents.
 
-**Version:** 0.1.0  
-**Status:** Production Ready  
+**Version:** 0.1.1
+**Status:** Production Ready
 **Inspiration:** [karpathy/autoresearch](https://github.com/karpathy/autoresearch) + [aiming-lab/AutoResearchClaw](https://github.com/aiming-lab/AutoResearchClaw)
 
 ## Overview
@@ -107,6 +107,11 @@ flood-autocalib/
 ├── satellite/
 │   ├── extraction.py       # Water extraction from GEE
 │   └── preprocessor.py     # Satellite data alignment
+├── tests/                  # Unit tests (63 tests)
+│   ├── test_metrics.py     # Metric calculations
+│   ├── test_loop.py        # Calibration loop
+│   ├── test_adapter.py     # Model adapters
+│   └── test_satellite.py   # Satellite preprocessing
 ├── visualization/
 │   └── plots.py            # Calibration visualization
 ├── main.py                 # Entry point

@@ -6,11 +6,14 @@ AutoResearch-style iterative calibration with lessons learned.
 import numpy as np
 import json
 import os
+import logging
 from typing import Dict, List, Any, Tuple
 from datetime import datetime
 
-from .metrics import CalibrationMetrics
-from ..models.adapter import ModelAdapter
+from calibration.metrics import CalibrationMetrics
+from models.adapter import ModelAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class CalibrationResult:
@@ -111,14 +114,17 @@ class AutoCalibrationLoop:
             metrics = {"nse": -np.inf, "kge": -np.inf, "iou": 0.0}
             return metrics, False, "Invalid parameters"
         
-        # 2. Run simulation
+        # 2. Apply parameters to model
+        self.model.set_parameters(params)
+
+        # 3. Run simulation
         result = self.model.run_simulation(self.storm_event)
         
         if not result.success:
             metrics = {"nse": -np.inf, "kge": -np.inf, "iou": 0.0}
             return metrics, False, result.error
-        
-        # 3. Extract outputs
+
+        # 4. Extract outputs
         discharge_obs = self.storm_event["observations"]["gauge"]["discharge"]
         discharge_sim = result.discharge["values"]
         inundation_obs = self.storm_event["observations"]["satellite"]["mask"]
@@ -130,19 +136,19 @@ class AutoCalibrationLoop:
             discharge_obs = discharge_obs[:min_len]
             discharge_sim = discharge_sim[:min_len]
         
-        # 4. Compute metrics
+        # 5. Compute metrics
         metrics = {
             "nse": self.metrics.nash_sutcliffe(discharge_obs, discharge_sim),
             "kge": self.metrics.kling_gupta(discharge_obs, discharge_sim),
             "iou": self.metrics.iou(inundation_obs, inundation_sim),
         }
         
-        # 5. Validate metrics
+        # 6. Validate metrics
         is_valid, msg = self.metrics.validate_metrics(metrics)
         if not is_valid:
             return metrics, False, msg
         
-        # 6. Composite score
+        # 7. Composite score
         score = self.metrics.composite_score(metrics, self.weights)
         metrics["score"] = score
         
@@ -151,21 +157,23 @@ class AutoCalibrationLoop:
     def update_pareto_front(self, result: CalibrationResult):
         """
         Update Pareto front with new result.
-        
+
         A result is non-dominated if no other result is better in all objectives.
         """
         dominated = False
-        
+        to_remove = []
+
         # Check if dominated by any existing result
         for existing in self.pareto_front:
             if self._dominates(existing, result):
                 dominated = True
                 break
             elif self._dominates(result, existing):
-                # Remove dominated result
-                self.pareto_front.remove(existing)
-        
+                to_remove.append(existing)
+
         if not dominated:
+            for item in to_remove:
+                self.pareto_front.remove(item)
             self.pareto_front.append(result)
     
     def _dominates(self, a: CalibrationResult, b: CalibrationResult) -> bool:
@@ -191,29 +199,33 @@ class AutoCalibrationLoop:
     def check_convergence(self) -> bool:
         """
         Check if calibration has converged.
-        
+
         Convergence criteria:
-        - Score improvement < tolerance over last N iterations
-        - Target metrics achieved
+        - Target metrics achieved (primary), OR
+        - Score plateau for extended period (secondary, after 2x window)
         """
         if len(self.history) < self.convergence_window:
             return False
-        
-        # Check score improvement
-        recent_scores = [r.score for r in self.history[-self.convergence_window:]]
-        score_range = max(recent_scores) - min(recent_scores)
-        
-        if score_range < self.tolerance:
-            return True
-        
-        # Check target metrics
+
         latest = self.history[-1]
+
+        # Primary: Check target metrics
         targets_met = all(
-            latest.metrics[k] >= self.target_metrics[k]
+            latest.metrics.get(k, -np.inf) >= self.target_metrics[k]
             for k in self.target_metrics
         )
-        
-        return targets_met
+
+        if targets_met:
+            return True
+
+        # Secondary: Score plateau after extended run
+        if len(self.history) >= self.convergence_window * 2:
+            recent_scores = [r.score for r in self.history[-self.convergence_window:]]
+            score_range = max(recent_scores) - min(recent_scores)
+            if score_range < self.tolerance:
+                return True
+
+        return False
     
     def run_iteration(self) -> CalibrationResult:
         """
@@ -341,20 +353,21 @@ class AutoCalibrationLoop:
             "iterations": self.iteration
         }
     
-    def _latin_hypercube_sample(self, bounds: List[Tuple[float, float]], 
+    def _latin_hypercube_sample(self, bounds: List[Tuple[float, float]],
                                   names: List[str]) -> Dict[str, float]:
         """Latin Hypercube sampling for initial exploration"""
-        np.random.seed(self.iteration * 42)  # Reproducible
-        
+        rng = np.random.default_rng(seed=self.iteration * 42 + 7)
         n_params = len(bounds)
+
+        # Proper LHS: one permutation ensures each stratum used once across dimensions
+        permutation = rng.permutation(n_params)
         samples = np.zeros(n_params)
-        
+
         for i in range(n_params):
-            # LHS: each dimension is stratified into n_params intervals
-            perm = np.random.permutation(n_params)
-            sample = (perm[i] + np.random.random()) / n_params
-            samples[i] = bounds[i][0] + sample * (bounds[i][1] - bounds[i][0])
-        
+            # Sample uniformly within the chosen stratum
+            u = (permutation[i] + rng.random()) / n_params
+            samples[i] = bounds[i][0] + u * (bounds[i][1] - bounds[i][0])
+
         return {name: val for name, val in zip(names, samples)}
     
     def _local_search(self, best_params: Dict[str, float],
@@ -362,14 +375,14 @@ class AutoCalibrationLoop:
                      names: List[str],
                      scale: float = 0.2) -> Dict[str, float]:
         """Local search around best parameters with Gaussian perturbation"""
-        np.random.seed(self.iteration * 42)
+        rng = np.random.default_rng(seed=self.iteration * 42 + 99)
         
         new_params = {}
         for i, name in enumerate(names):
             center = best_params.get(name, (bounds[i][0] + bounds[i][1]) / 2)
             range_size = (bounds[i][1] - bounds[i][0]) * scale
             
-            perturbation = np.random.normal(0, range_size)
+            perturbation = rng.normal(0, range_size)
             new_val = center + perturbation
             
             # Clamp to bounds
@@ -390,9 +403,18 @@ class AutoCalibrationLoop:
     
     def save_results(self, output_path: str):
         """Save calibration results to JSON"""
-        results = self.run(max_iterations=0)  # Get current state
-        
+        results = {
+            "best_params": self.best_params,
+            "best_metrics": self.best_metrics,
+            "best_score": self.best_score,
+            "pareto_front": [self._serialize_result(r) for r in self.pareto_front],
+            "history": [self._serialize_result(r) for r in self.history],
+            "lessons": self.lessons,
+            "converged": self.converged,
+            "iterations": self.iteration
+        }
+
         with open(output_path, 'w') as f:
             json.dump(results, f, indent=2)
-        
+
         print(f"\n📁 Calibration results saved to: {output_path}")

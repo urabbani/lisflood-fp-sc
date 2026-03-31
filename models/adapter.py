@@ -6,6 +6,9 @@ All model adapters must inherit from this class.
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SimulationResult:
     """Container for model simulation results"""
@@ -14,8 +17,8 @@ class SimulationResult:
                  inundation: Dict[str, Any] = None,
                  success: bool = True,
                  error: str = None):
-        self.discharge = discharge or {}  # {"timestamps": [], "values": []}
-        self.inundation = inundation or {}  # {"grid": 2D_array, "resolution": ..., "crs": ...}
+        self.discharge = discharge if discharge is not None else {}
+        self.inundation = inundation if inundation is not None else {}
         self.success = success
         self.error = error
 
@@ -84,14 +87,14 @@ class ModelAdapter(ABC):
         param_ranges = self.get_parameters()
         for name, value in params.items():
             if name not in param_ranges:
-                print(f"Warning: Unknown parameter {name}")
-                continue
+                logger.warning("Unknown parameter %s", name)
+                return False
             
             min_val = param_ranges[name]["min"]
             max_val = param_ranges[name]["max"]
             
             if not (min_val <= value <= max_val):
-                print(f"Warning: {name} = {value} out of range [{min_val}, {max_val}]")
+                logger.warning("%s = %s out of range [%s, %s]", name, value, min_val, max_val)
                 return False
         
         return True

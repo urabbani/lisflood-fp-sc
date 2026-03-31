@@ -8,7 +8,6 @@ import rasterio
 from rasterio.warp import reproject, Resampling
 from rasterio.transform import from_origin
 from typing import Dict, Any, Tuple
-import numpy as np
 
 
 class SatelliteInundation:
@@ -135,7 +134,9 @@ class SatelliteInundation:
         Returns:
             Binary water mask
         """
-        mndwi = (green_band - swir_band) / (green_band + swir_band)
+        denominator = green_band + swir_band
+        with np.errstate(divide='ignore', invalid='ignore'):
+            mndwi = np.where(denominator != 0, (green_band - swir_band) / denominator, 0.0)
         water_mask = (mndwi > threshold).astype(np.uint8)
         
         print(f"   MNDWI range: {mndwi.min():.3f} to {mndwi.max():.3f}")
@@ -223,11 +224,10 @@ class SatelliteInundation:
             stats["mean_patch_size"] = np.mean(patch_sizes)
             stats["num_patches"] = num_features
         
-        # Calculate edge pixels
-        stats["edge_pixels"] = np.sum(
-            (mask[1:, :] != mask[:-1, :]) |
-            (mask[:, 1:] != mask[:, :-1])
-        )
+        # Calculate edge pixels (vertical + horizontal transitions separately)
+        vertical_edges = np.sum(mask[1:, :] != mask[:-1, :])
+        horizontal_edges = np.sum(mask[:, 1:] != mask[:, :-1])
+        stats["edge_pixels"] = vertical_edges + horizontal_edges
         
         print(f"   Flood percentage: {stats['flood_percentage']:.1f}%")
         print(f"   Number of patches: {stats.get('num_patches', 0)}")

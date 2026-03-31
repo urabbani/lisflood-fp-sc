@@ -7,6 +7,7 @@ import argparse
 import yaml
 import os
 import json
+import logging
 from pathlib import Path
 
 from models.lisflood.adapter import LISFLOODAdapter
@@ -14,6 +15,8 @@ from models.lisflood82.adapter import LISFLOOD82Adapter
 from calibration.loop import AutoCalibrationLoop
 from data.preprocessing import load_observations
 from satellite.preprocessor import SatelliteInundation
+
+logger = logging.getLogger(__name__)
 
 
 def load_config(config_path: str) -> dict:
@@ -76,7 +79,26 @@ def main():
     # Load configuration
     print(f"\n🔧 Loading configuration from: {args.config}")
     config = load_config(args.config)
-    
+
+    # Configure logging
+    log_config = config.get("logging", {})
+    log_level = getattr(logging, log_config.get("level", "INFO").upper(), logging.INFO)
+    log_file = log_config.get("file")
+    log_console = log_config.get("console", True)
+
+    handlers = []
+    if log_file:
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        handlers.append(logging.FileHandler(log_file))
+    if log_console:
+        handlers.append(logging.StreamHandler())
+
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=handlers if handlers else None
+    )
+
     # Setup directories
     setup_directories(config)
     
@@ -201,7 +223,7 @@ def main():
     print(f"Lessons Learned: {len(results['lessons'])}")
     
     # Export lessons to MetaClaw if enabled
-    if config["metaclaw"]["enabled"]:
+    if config.get("metaclaw", {}).get("enabled", False):
         print("\n🧠 Exporting lessons to MetaClaw...")
         # (MetaClaw integration placeholder)
         # export_lessons_to_metaclaw(results["lessons"], config["metaclaw"])

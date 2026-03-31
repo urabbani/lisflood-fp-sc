@@ -44,6 +44,11 @@ flood-autocalib/
 │   └── preprocessing.py     # Data loading & validation
 ├── satellite/                 # Satellite data handling
 │   └── preprocessor.py     # Flood mask alignment
+├── tests/                     # Unit tests (pytest)
+│   ├── test_metrics.py       # Metric calculations
+│   ├── test_loop.py          # Calibration loop components
+│   ├── test_adapter.py       # Model adapter & parameter validation
+│   └── test_satellite.py     # Satellite preprocessing
 ├── visualization/             # Plotting
 │   └── plots.py             # Calibration visualizations
 ├── main.py                    # Entry point
@@ -267,6 +272,23 @@ python main.py --config config/project.yaml --max-iterations 200 --save-plots
 
 ## Testing
 
+### Automated Tests
+
+```bash
+# Run all tests
+python -m pytest tests/ -v
+
+# Run specific test modules
+python -m pytest tests/test_metrics.py -v
+python -m pytest tests/test_loop.py -v
+```
+
+Test coverage includes:
+- **test_metrics.py** (32 tests): NSE, KGE, IoU, F1, timing_error, composite_score, validate_metrics
+- **test_loop.py** (10 tests): LHS sampling, local search, Pareto front, convergence, parameter application
+- **test_adapter.py** (9 tests): SimulationResult defaults, parameter validation, parameter bounds
+- **test_satellite.py** (13 tests): MNDWI (including div-by-zero), SAR, depth thresholding, mask smoothing, validation
+
 ### Manual Test with Sample Data
 
 1. Use provided example files in `data/`
@@ -295,6 +317,27 @@ python main.py --config config/project.yaml --max-iterations 200 --save-plots
 ---
 
 ## Version History
+
+**0.1.1** (2026-03-30)
+- Fix: Calibration loop now correctly applies proposed parameters to model before simulation
+- Fix: Convergence detection requires targets met or extended score plateau (was premature)
+- Fix: Pareto front update no longer mutates list during iteration
+- Fix: Proper Latin Hypercube Sampling with stratified permutations
+- Fix: Local RNG via `np.random.default_rng()` (no global seed pollution)
+- Fix: `timing_error()` uses consistent NaN-filtered indexing
+- Fix: MNDWI division-by-zero guard for zero denominator
+- Fix: Bare `except` replaced with `except Exception`
+- Fix: Safe `config.get("metaclaw", {})` access prevents KeyError
+- Fix: ASCII raster header parsing is case-insensitive
+- Fix: `re.escape()` on parameter names in regex
+- Fix: Unknown parameters now correctly rejected by `validate_parameters()`
+- Fix: Cross-package relative imports converted to absolute imports
+- Fix: `validate_mask()` edge pixel calculation shape mismatch
+- Add: Python logging module with config-based setup
+- Add: 63 unit tests across 4 test files
+- Add: `LISFLOOD82Adapter` to package exports
+- Remove: Unused `scipy.stats` import, duplicate `numpy` import
+- Move: `shutil` imports to module level in adapter files
 
 **0.1.0** (2026-03-30)
 - Initial release

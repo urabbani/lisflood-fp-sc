@@ -5,7 +5,6 @@ Computes NSE, KGE (temporal) and IoU (spatial) metrics.
 
 import numpy as np
 from typing import Dict, Tuple
-from scipy import stats
 
 
 class CalibrationMetrics:
@@ -205,21 +204,29 @@ class CalibrationMetrics:
                     timestamps: np.ndarray) -> float:
         """
         Timing error in peak flow (hours).
-        
+
         Args:
             observed: Observed discharge time series
             simulated: Simulated discharge time series
             timestamps: Timestamps (hours or seconds)
-        
+
         Returns:
             Timing error (peak lag in same unit as timestamps)
         """
-        obs_max_idx = np.argmax(observed[~np.isnan(observed)])
-        sim_max_idx = np.argmax(simulated[~np.isnan(simulated)])
-        
-        # Convert to actual timestamps
-        time_diff = abs(timestamps[sim_max_idx] - timestamps[obs_max_idx])
-        
+        # Remove NaN values consistently across all arrays
+        mask = ~np.isnan(observed) & ~np.isnan(simulated)
+        obs_clean = observed[mask]
+        sim_clean = simulated[mask]
+        ts_clean = timestamps[mask]
+
+        if len(obs_clean) == 0:
+            return np.inf
+
+        obs_max_idx = np.argmax(obs_clean)
+        sim_max_idx = np.argmax(sim_clean)
+
+        time_diff = abs(ts_clean[sim_max_idx] - ts_clean[obs_max_idx])
+
         return time_diff
     
     @staticmethod
