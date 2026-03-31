@@ -19,7 +19,7 @@ This file provides context and instructions for Claude, Codex, and other AI assi
 ## Quick Context
 
 - **Main model:** LISFLOOD-FP 8.2 (GPU-accelerated)
-- **Key repository:** https://github.com/urabbani/lisflood-fp_8.2_update
+- **Integrated source:** src/lisflood-fp/ (LISFLOOD-FP 8.2 with auto-compilation)
 - **Inspiration:** AutoResearch (karpathy) + AutoResearchClaw (aiming-lab)
 - **Calibration metrics:** NSE, KGE (temporal) + IoU (spatial)
 - **Calibratable parameters:** 11 total (friction, infiltration, CFL, etc.)
@@ -30,6 +30,8 @@ This file provides context and instructions for Claude, Codex, and other AI assi
 
 ```
 flood-autocalib/
+├── src/                       # Integrated LISFLOOD-FP 8.2 source
+│   └── lisflood-fp/
 ├── config/                    # Configuration files
 │   ├── project.yaml.example
 │   └── project_lisflood82.yaml.example  # LISFLOOD-FP 8.2 specific

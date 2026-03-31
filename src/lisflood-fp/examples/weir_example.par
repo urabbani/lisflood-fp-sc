@@ -1,0 +1,29 @@
+# LISFLOOD-FP Weir Example
+# Example parameter file for a simulation with weirs/levees
+
+# --- Input Files ---
+DEMfile         dem.asc         # Digital Elevation Model
+startfile       dry.asc         # Initial water depths (all dry)
+bcifile         inflow.bci      # Boundary condition file
+weirfile        weirs.txt       # Weir structure definition file
+
+# --- Output Control ---
+resroot         ./results/weir_sim  # Output directory and prefix
+saveint         1800            # Output interval (30 minutes)
+massint         1800            # Mass balance calculation interval
+dirroot         ./results       # Output directory
+resname         weir_sim        # Output file prefix
+fpfric          0.04            # Floodplain Manning's n value
+voutput                         # Include velocity output
+hazard                          # Generate hazard rating output
+
+# --- Time Control ---
+sim_time        43200           # Simulation duration (12 hours)
+initial_tstep   5.0             # Initial time step size (seconds)
+
+# --- Solver Options ---
+solver          FV1             # Use the first-order finite volume solver
+acceleration    0               # Use full shallow water equations
+cuda            1               # Enable CUDA acceleration
+froude          1               # Enable Froude number limitation
+courant         0.7             # CFL number for adaptive time stepping

@@ -22,11 +22,11 @@ logger = logging.getLogger(__name__)
 
 class LISFLOOD82Adapter(ModelAdapter):
     """Adapter for LISFLOOD-FP 8.2 with GPU acceleration and advanced solvers"""
-    
+
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        
-        self.executable = config["executable"]
+
+        self.executable = self._resolve_executable(config["executable"])
         self.param_template = config["param_template"]
         self.output_dir = config["output_dir"]
         
@@ -130,6 +130,45 @@ class LISFLOOD82Adapter(ModelAdapter):
         self.verbose = config.get("verbose", True)
         self.solver = config.get("solver", "ACC")  # Default: ACC (fastest)
     
+    @staticmethod
+    def _resolve_executable(executable: str) -> str:
+        """Resolve 'auto' to the integrated LISFLOOD-FP binary, compiling if needed."""
+        if executable != "auto":
+            return executable
+
+        # Look for integrated LISFLOOD-FP source
+        project_root = Path(__file__).resolve().parent.parent.parent
+        source_dir = project_root / "src" / "lisflood-fp"
+        build_dir = source_dir / "build"
+
+        if not source_dir.exists():
+            raise FileNotFoundError(
+                "LISFLOOD-FP source not found in src/lisflood-fp/"
+            )
+
+        # Check for existing binary
+        for name in ["lisflood", "lisflood.exe"]:
+            binary = build_dir / name
+            if binary.exists():
+                logger.info("Using integrated LISFLOOD-FP binary: %s", binary)
+                return str(binary)
+
+        # Also check Release subdirectory (Windows)
+        release_binary = build_dir / "Release" / "lisflood.exe"
+        if release_binary.exists():
+            logger.info("Using integrated LISFLOOD-FP binary: %s", release_binary)
+            return str(release_binary)
+
+        # Binary not found — attempt to compile
+        logger.info("LISFLOOD-FP binary not found, compiling from integrated source...")
+        # Import build script from the new location
+        import sys
+        sys.path.append(str(project_root / "scripts"))
+        from build_lisflood import build
+        binary = build(clean=False, cuda=False)
+        logger.info("Compiled LISFLOOD-FP: %s", binary)
+        return str(binary)
+
     def _load_template(self) -> list:
         """Load template .par file lines"""
         if not os.path.exists(self.param_template):

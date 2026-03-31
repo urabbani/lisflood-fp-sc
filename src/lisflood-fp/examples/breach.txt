@@ -1,0 +1,8 @@
+1  # Number of weirs
+
+# Format: x y Type Cd Crest_Elev Modular_Limit Width
+# This represents a dam breach modeled as a weir
+# The crest elevation is set at the level where the breach occurs
+
+# Dam breach - modeled as a weir in west direction
+200.0 150.0 W 0.6 45.0 0.7 30.0

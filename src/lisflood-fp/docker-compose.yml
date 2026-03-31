@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  lisflood:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lisflood-fp
+    volumes:
+      - ./data/input:/data/input
+      - ./data/output:/data/output
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  lisflood-cpu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lisflood-fp
+    volumes:
+      - ./data/input:/data/input
+      - ./data/output:/data/output
+    command: /app/lisflood /data/input/simulation.par

@@ -1,0 +1,13 @@
+# Example boundary condition file (.bci)
+# Format: <x> <y> <type> <value>
+# Types: HVAR = time-varying water level, QVAR = time-varying discharge
+# Values: filename containing time series data
+
+# West boundary - inflow hydrograph
+100 100 QVAR inflow_hydrograph.txt
+
+# East boundary - free boundary
+300 100 FREE
+
+# Stage monitoring point
+150 150 GAUGE gauge1.txt

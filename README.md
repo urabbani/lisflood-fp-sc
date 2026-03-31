@@ -81,42 +81,48 @@ python main.py --config config/project.yaml
 
 ```
 flood-autocalib/
+├── src/
+│   └── lisflood-fp/        # LISFLOOD-FP 8.2 source (integrated)
+├── scripts/
+│   └── build_lisflood.py   # Compile integrated source
 ├── config/
 │   └── project.yaml.example
-├── data/
-│   ├── rainfall/
-│   ├── terrain/
-│   ├── boundary/
-│   ├── observations/
-│   │   ├── gauges/
-│   │   └── satellite/
-│   └── outputs/
 ├── models/
 │   ├── adapter.py          # Base adapter interface
 │   ├── lisflood/
 │   │   └── adapter.py      # LISFLOOD-FP implementation
-│   └── hechms/
-│       └── adapter.py      # (Future) HEC-HMS
+│   └── lisflood82/
+│       └── adapter.py       # LISFLOOD-FP 8.2 (GPU, ACC/FV1/FV2/DG2)
 ├── calibration/
 │   ├── metrics.py          # NSE, KGE, IoU
-│   ├── loop.py             # Auto-calibration loop
-│   └── surrogate.py        # Gaussian Process surrogate
+│   └── loop.py             # Auto-calibration loop
 ├── data/
-│   ├── preprocessing.py    # Input data validation
-│   └── observations.py     # Load gauge + satellite data
+│   └── preprocessing.py    # Input data validation
 ├── satellite/
-│   ├── extraction.py       # Water extraction from GEE
 │   └── preprocessor.py     # Satellite data alignment
 ├── tests/                  # Unit tests (63 tests)
-│   ├── test_metrics.py     # Metric calculations
-│   ├── test_loop.py        # Calibration loop
-│   ├── test_adapter.py     # Model adapters
-│   └── test_satellite.py   # Satellite preprocessing
 ├── visualization/
 │   └── plots.py            # Calibration visualization
 ├── main.py                 # Entry point
 └── requirements.txt
 ```
+
+## Building LISFLOOD-FP
+
+The LISFLOOD-FP 8.2 source is integrated directly into the repository. The framework auto-compiles it when `executable: "auto"` is set in config.
+
+```bash
+# Manual build (optional — auto-builds if needed)
+python scripts/build_lisflood.py           # CPU-only
+python scripts/build_lisflood.py --cuda    # With GPU acceleration
+python scripts/build_lisflood.py --force   # Rebuild
+```
+
+**Build prerequisites:**
+- CMake >= 3.13
+- C++14 compiler (GCC 5+, Clang 3.4+, or MSVC 2017+)
+- Optional: CUDA Toolkit >= 9.0 (for GPU acceleration)
+- Optional: NetCDF libraries (for NetCDF I/O)
 
 ## Configuration Example
 

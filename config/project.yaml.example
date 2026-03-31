@@ -8,7 +8,7 @@ project:
 # Model adapter configuration
 model:
   type: "lisflood-fp"
-  executable: "/path/to/lisflood-fp"  # Path to LISFLOOD-FP executable
+  executable: "auto"  # "auto" uses vendored source (auto-compiles), or set explicit path
   param_template: "data/lisflood/template.par"  # Template .par file
   output_dir: "data/outputs/lisflood/"  # Simulation output directory
 

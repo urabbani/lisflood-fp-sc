@@ -1,0 +1,34 @@
+# LISFLOOD-FP Urban Flood Example
+# Example parameter file for an urban flood simulation with rainfall
+
+# --- Input Files ---
+DEMfile         urban_dem.asc   # Digital Elevation Model of urban area
+startfile       dry.asc         # Initial water depths (all dry)
+manningsn       urban_n.asc     # Distributed Manning's n values
+rain            rainfall.asc    # Rainfall input (uniform intensity)
+
+# --- Output Control ---
+resroot         ./results/urban_sim  # Output directory and prefix
+saveint         900             # Output interval (15 minutes)
+massint         900             # Mass balance calculation interval
+dirroot         ./results       # Output directory
+resname         urban_sim       # Output file prefix
+voutput                         # Include velocity output
+hazard                          # Generate hazard rating output
+binary_out                      # Use binary output format for efficiency
+
+# --- Time Control ---
+sim_time        14400           # Simulation duration (4 hours)
+initial_tstep   2.0             # Initial time step size (seconds)
+
+# --- Solver Options ---
+solver          ACC_NUGRID      # Use the non-uniform grid acceleration solver
+acceleration    1               # Use acceleration formulation
+cuda            1               # Enable CUDA acceleration
+froude          1               # Enable Froude number limitation
+courant         0.7             # CFL number for adaptive time stepping
+epsilon         0.1             # AMR threshold for grid refinement
+
+# --- Miscellaneous ---
+verbose                         # Enable verbose output
+logfile         urban_sim.log   # Log file path
