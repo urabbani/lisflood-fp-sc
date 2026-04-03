@@ -41,5 +41,6 @@ Built upon the brilliant ideas from:
 This represents what I believe is a significant step toward making hydrological modeling more accessible, objective, and powerful. The self-improving loop concept applied to environmental modeling has tremendous potential.
 
 I'm preparing to publish this openly and would love feedback from the hydrology, water resources, and environmental modeling communities!
+Contact me at: umairrs@gmail.com or https://www.linkedin.com/in/drumairrabbani/
 
 #Hydrology #WaterResources #FloodModeling #AutoML #OpenSource #SelfCalibrating #LISFLOODFP #EnvironmentalModelling #AIForEarth #ResearchSoftware

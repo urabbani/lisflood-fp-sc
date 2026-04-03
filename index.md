@@ -263,9 +263,9 @@ If you use this code, please cite:
 ## Contact
 
 **Umair Rabbani**  
-📧 [urabbani@example.com](mailto:urabbani@example.com)  
+📧 [umairrs@gmail.com](mailto:umairrs@gmail.com)  
 🐙 [github.com/urabbani](https://github.com/urabbani)  
-💼 [linkedin.com/in/urabbani](https://linkedin.com/in/urabbani)
+💼 [linkedin.com/in/drumairrabbani](https://www.linkedin.com/in/drumairrabbani/)
 
 ---
 
