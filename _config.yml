@@ -1,0 +1,19 @@
+title: Self-Calibrating LISFLOOD-FP
+description: Automatic calibration of flood models using multi-objective optimization with gauge data and satellite observations
+theme: jekyll-theme-cayman
+show_downloads: true
+github:
+  repository_url: https://github.com/urabbani/self-calibrating-lisflood-fp
+  owner_url: https://github.com/urabbani
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+plugins:
+  - jekyll-readme-index
+  - jemoji
+
+sass:
+  style: compressed

@@ -1,0 +1,333 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+// Color palette - water/hydrology inspired
+$primary-blue: #1a73e8;
+$deep-blue: #0d47a1;
+$teal: #00897b;
+$light-blue: #e3f2fd;
+$dark-bg: #1b2838;
+$card-bg: #ffffff;
+$text-primary: #212121;
+$text-secondary: #546e7a;
+$border-color: #e0e0e0;
+$accent-orange: #ff6d00;
+
+// Override Cayman theme header
+.page-header {
+  background: linear-gradient(135deg, $deep-blue 0%, #1565c0 40%, $teal 100%);
+  padding: 3rem 2rem;
+
+  .project-name {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-tagline {
+    font-size: 1.15rem;
+    opacity: 0.95;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+}
+
+.main-content {
+  h1, h2, h3, h4, h5, h6 {
+    color: $deep-blue;
+  }
+
+  h2 {
+    border-bottom: 2px solid $primary-blue;
+    padding-bottom: 0.4rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: $teal;
+  }
+}
+
+// Hero buttons
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &.btn-primary {
+      background: $primary-blue;
+      color: white;
+      box-shadow: 0 2px 8px rgba($primary-blue, 0.3);
+
+      &:hover {
+        background: $deep-blue;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($primary-blue, 0.4);
+      }
+    }
+
+    &.btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(white, 0.6);
+
+      &:hover {
+        background: rgba(white, 0.1);
+        border-color: white;
+      }
+    }
+  }
+}
+
+// Feature grid
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0 2.5rem;
+
+  .feature-card {
+    background: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $primary-blue;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h4 {
+      margin: 0.5rem 0;
+      color: $deep-blue;
+      font-size: 1.05rem;
+    }
+
+    p {
+      color: $text-secondary;
+      font-size: 0.9rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+}
+
+// Workflow steps
+.workflow-steps {
+  counter-reset: step;
+  margin: 1.5rem 0;
+
+  .step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+
+    &::before {
+      counter-increment: step;
+      content: counter(step);
+      background: $primary-blue;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      h4 {
+        margin: 0 0 0.25rem;
+        color: $deep-blue;
+      }
+
+      p {
+        color: $text-secondary;
+        margin: 0;
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+// Metric badges
+.metric-badges {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0 2rem;
+
+  .metric-badge {
+    background: $light-blue;
+    border-left: 4px solid $primary-blue;
+    padding: 0.75rem 1rem;
+    border-radius: 0 6px 6px 0;
+    flex: 1;
+    min-width: 200px;
+
+    strong {
+      color: $deep-blue;
+      display: block;
+      font-size: 1rem;
+    }
+
+    span {
+      color: $text-secondary;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+// Parameter table
+.param-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+
+  th {
+    background: $deep-blue;
+    color: white;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid $border-color;
+    font-size: 0.9rem;
+  }
+
+  tr:nth-child(even) {
+    background: #f8f9fa;
+  }
+
+  code {
+    background: #eef2f7;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: $deep-blue;
+  }
+}
+
+// Info callout
+.callout {
+  background: $light-blue;
+  border-left: 4px solid $primary-blue;
+  padding: 1rem 1.25rem;
+  border-radius: 0 6px 6px 0;
+  margin: 1.5rem 0;
+
+  p {
+    margin: 0;
+    color: $text-primary;
+  }
+
+  strong {
+    color: $deep-blue;
+  }
+}
+
+// Code blocks
+pre, code {
+  font-size: 0.88rem;
+}
+
+pre {
+  border-radius: 8px;
+  border: 1px solid $border-color;
+}
+
+// Citation box
+.citation-box {
+  background: #f5f5f5;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1rem 0;
+
+  pre {
+    background: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.85rem;
+  }
+}
+
+// Footer link section
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    text-decoration: none;
+    color: $text-primary;
+    font-weight: 500;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: $primary-blue;
+      color: $primary-blue;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .page-header {
+    padding: 2rem 1rem;
+
+    .project-name {
+      font-size: 1.8rem;
+    }
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
