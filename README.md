@@ -1,6 +1,6 @@
 # Self-Calibrating LISFLOOD-FP 🌊
 
-**Inspired by AutoResearch and AutoResearchClaw**
+**Inspired by Andrej Karpathy's AutoResearch self-improving loops**
 
 A model-agnostic, self-improving flood simulation system with automatic calibration using gauge data and satellite-derived inundation extents.
 
